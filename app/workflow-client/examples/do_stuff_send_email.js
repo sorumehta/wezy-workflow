@@ -1,90 +1,79 @@
 const workflow = {
-    "actions": {
-        "send_email_to_customer":{
-            "type":"email",
-            "parameters":{
-                "to":"__get_contact_details.data.email",
-                "from":"assistant@sandpipernlu.com",
-                "subject":"A new correspondence has been added by agent"
+    "actions": [
+        {
+            "name":"send_http_to_customer",
+            "type":"http",
+            "config":{
+                "url":"http://localhost:7890/customer",
+                "data":"__start.hello",
+                "method":"post",
+                "params": "whatevs",
+                "headers": "yo mum"
             }
         },
-        "send_email_to_agent":{
-            "type":"email",
-            "parameters":{
-                "to":"soru.mehta@outlook.com",
-                "from":"assistant@sandpipernlu.com",
-                "subject":"New message has been added to your case by the customer"
-            }
-        },
-        "create_new_correspondence":{
-            "type":"create_correspondence",
-            "parameters":{
-                "content":"__post_new_correspondence.data.content",
-                "account_id":"__post_new_correspondence.account_id",
-                "case_id":"__post_new_correspondence.data.case_id",
-                "channel_id": "__post_new_correspondence.data.channel_id",
-                "is_incoming": "__post_new_correspondence.data.is_incoming"
+        {
+            "name":"send_http_to_agent",
+            "type":"http",
+            "config":{
+                "url":"http://localhost:7890/agent",
+                "data":"__start.hello",
+                "method":"post",
+                "params": "whatevs",
+                "headers": "yo mum"
             }
         },
 
-        "get_contact_details":{
-            "type":"get_contact",
-            "parameters":{
-                "contact_id":"__post_new_correspondence.data.contact_id",
-                "account_id":"__post_new_correspondence.account_id"
+        {
+            "name":"post_data_to_crm",
+            "type":"function",
+            "config":{
+                "return_val": "send_to_agent"
             }
         },
-        "post_data_to_crm":{
-            "type":"http",
-            "parameters":{
-                "url":"http://localhost:7890/users",
-                "data":"__post_new_correspondence.data",
-                "method":"post"
-            }
-        },
-        "IF":{
+        {
+            "name":"IF",
             "type": "condition",
-            "parameters":{
+            "config":{
                 "condition": {
                     "type": "boolean",
-                    "value1": "__post_new_correspondence.data.is_incoming",
-                    "value2": true
+                    "value1": "__post_data_to_crm.result",
+                    "value2": "send to customer"
+
                 }
             }
         }
-    },
-    "trigger":{
-        "name": "new_correspondence_trigger",
-        "next":"post_new_correspondence",
-        "type":"webhook",
-        "run_type":"immediate"
-    },
+    ],
+    "triggers":[
+        {
+            "name": "webhook_sync_trigger",
+            "type":"webhook",
+            "is_async": false
+        },
+        {
+            "name": "cron_async_trigger",
+            "type": "cron",
+            "is_async": true
+        }
+    ],
     "links": {
-
-        "send_email_to_customer":{
-            "next":null
+        "start":{
+            "next": "post_data_to_crm"
         },
-        "send_email_to_agent":{
-            "next":null
+        "send_http_to_customer":{
+            "next":'nil'
         },
-        "printNoEmail":{
-            "next": null
-        },
-        "post_new_correspondence":{
-            "next":"get_contact_details"
-        },
-        "get_contact_details": {
-            "next":"create_new_correspondence"
-        },
-        "create_new_correspondence":{
-            "next":"post_data_to_crm"
+        "send_http_to_agent":{
+            "next":'nil'
         },
         "post_data_to_crm":{
             "next":"IF"
         },
-        "IF": [
-            {"next": "send_email_to_agent"},{"next": "send_email_to_customer"}
-        ]
+        "IF":
+            {
+                "next_t": "send_http_to_agent",
+                "next_f": "send_http_to_customer"
+            },
+
     },
     "is_active": true
 }

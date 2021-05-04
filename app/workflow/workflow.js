@@ -1,71 +1,95 @@
+const Action = require('./actions')
+const Trigger = require('./trigger')
+const Link = require('./links')
 const {getWorkflowByName} = require('../controllers/workflows_controller')
-const {getActionByType} = require('./actions')
 
 
-const Workflow = () => {
-    //workflowParams = {id, name, connections, actions, isActive}
-    const workflowObj = {}
+const Workflow = (params) => {
+    const {id, name, is_active} = params
+    let {links, actions, triggers} = params
 
-    const _initWorkflow = (params) => {
+    //init actions
+    const actionsObj = {}
+    actions.forEach(action => {
+        actionsObj[action.name] = Action(action)
+    })
+    actions = actionsObj
 
-        const {id, name, links, actions, trigger, is_active} = params
-        Object.keys(actions).forEach(action => {
-            actions[action].type = getActionByType(action.type)
-        })
+    //init triggers
+    const triggersArr = []
+    triggers.forEach(trigger => {
+        triggersArr.push(Trigger(trigger))
+    })
+    triggers = triggersArr
 
-        workflowObj.id = id
-        workflowObj.name = name
-        workflowObj.links = links
-        workflowObj.actions = actions
-        workflowObj.isActive = is_active
-        workflowObj.trigger = trigger
-
-    }
-
-    const initWorkflowByName = (workflowName) => {
-        const workflowParams = getWorkflowByName(workflowName)
-        if(workflowParams){
-            _initWorkflow(workflowParams)
-        } else{
-            return null
-        }
-    }
+    //init links
+    links = Link(links)
 
     const isWorkflowActive = () => {
-        return workflowObj.isActive
+        return is_active
+    }
+
+    const getWorkflowName = () => {
+        return name
     }
 
     const getLinks = () => {
-        return workflowObj.links
+        return links
     }
 
-    const getTrigger = () => {
-        return workflowObj.trigger
+    const _getTrigger = (triggerType) => {
+        for(let i = 0; i < triggers.length; i++){
+            let trigger = triggers[i]
+            if(trigger.getType() === triggerType){
+                return trigger
+            }
+        }
+        throw `trigger ${triggerType} does not exist in the workflow`
     }
 
-    const checkWorkflowAndTrigger = (workflowName, triggerType) => {
-        initWorkflowByName(workflowName)
-        console.log(`workflow initialized:`)
-        console.log(JSON.stringify(workflowObj, null, 2))
-        if(Object.keys(workflowObj).length !== 0){
-            console.log(`isActive: ${workflowObj.isActive}`)
-            return workflowObj.isActive && workflowObj.trigger.type === triggerType;
-        }else{
+    const _hasTrigger = (triggerType) => {
+        console.log("checking all triggers:")
+        for(let i = 0; i < triggers.length; i++){
+            let trigger = triggers[i]
+            console.log(trigger.getType())
+            if(trigger.getType() === triggerType){
+                console.log('trigger matched!')
+                return true
+            }
+        }
+        console.log(`WARNING: trigger type ${triggerType} not found in workflow, cannot be triggered`)
+        return false
+    }
+
+    const getAction = (actionName) => {
+        if(Object.keys(actions).includes(actionName)){
+            return actions[actionName]
+        }
+        throw `action ${actionName} does not exist in the workflow`
+    }
+
+    const canTriggerWorkflow = (triggerType, token) => {
+        if(_hasTrigger(triggerType) && is_active){
+            return _getTrigger(triggerType).isAuthed(token)
+        } else{
             return false
         }
-
     }
 
-    const getNextAction = (currentAction) => {
-        if(workflowObj.links.hasOwnProperty(currentAction)){
-            return workflowObj.links[currentAction].next
-        } else{
-            throw "Action not present in links"
-        }
-    }
-
-
-    return {checkWorkflowAndTrigger, getNextAction, getTrigger, getLinks, getNextAction}
+    return {canTriggerWorkflow, getLinks, getAction, isWorkflowActive, getWorkflowName}
 }
 
-module.exports = {Workflow}
+const initWorkflowByName = (workflowName) => {
+    const workflowParams = getWorkflowByName(workflowName)
+    if(workflowParams){
+
+        return Workflow(workflowParams)
+    }
+    else{
+        console.log(`WARNING: no workflow found with name ${workflowName}`)
+        return null
+    }
+}
+
+
+module.exports = {initWorkflowByName}
