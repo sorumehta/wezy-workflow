@@ -2,7 +2,9 @@ const ActionConfig = require('./actionConfig')
 const Http = require('./actionTypes/http')
 const Condition = require('./actionTypes/condition')
 const Function = require('./actionTypes/function')
+const Email = require('./actionTypes/email')
 const Auth = require('./auth')
+
 
 const Action = (params) => {
     console.log(`initialising action with params:`)
@@ -24,7 +26,10 @@ const Action = (params) => {
         else if(type === 'function') {
             return Function
         }
-            throw `no matching action type object for ${type}`
+        else if(type === 'email') {
+            return Email
+        }
+        throw `no matching action type object for ${type}`
     }
 
     const actionType = _getActionByType(params.type)
@@ -57,7 +62,7 @@ const Action = (params) => {
     }
 
     return {execAction, getName, getType, getTypeName, getParams}
-
 }
+
 
 module.exports = Action

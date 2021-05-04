@@ -1,6 +1,16 @@
 const workflow = {
     "actions": [
         {
+            "name": "send_email",
+            "type": "email",
+            "config":{
+                "from": "soru.mehta@gmail.com",
+                "to": "__start.email_to",
+                "subject": "By the order of peaky blinders",
+                "text": "__start.hello"
+            }
+        },
+        {
             "name":"send_http_to_customer",
             "type":"http",
             "config":{
@@ -60,7 +70,10 @@ const workflow = {
             "next": "post_data_to_crm"
         },
         "send_http_to_customer":{
-            "next":'nil'
+            "next":'send_email'
+        },
+        "send_email": {
+            "next": "nil"
         },
         "send_http_to_agent":{
             "next":'nil'
@@ -77,5 +90,6 @@ const workflow = {
     },
     "is_active": true
 }
+
 
 module.exports = workflow
