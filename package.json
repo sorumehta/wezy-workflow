@@ -4,7 +4,12 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "test": "echo \"Error: no test specified\" && exit 1",
+    "start": "node ./app/index.js",
+    "devstart": "nodemon ./app/index.js",
+    "serverstart": "DEBUG=sandpiper-web-app:* npm run devstart",
+    "db:migrate": "npx knex migrate:latest --knexfile db/knexfile.js",
+    "db:seed": "npx knex seed:run --knexfile db/knexfile.js"
   },
   "author": "",
   "license": "Proprietary",
@@ -13,6 +18,7 @@
     "@koa/router": "^10.0.0",
     "amqplib": "^0.7.1",
     "axios": "^0.21.1",
+    "bcrypt": "^5.0.1",
     "dotenv": "^8.2.0",
     "knex": "^0.21.19",
     "koa": "^2.13.1",
@@ -21,6 +27,7 @@
     "koa-jwt": "^4.0.1",
     "koa-logger": "^3.2.1",
     "koa-static": "^5.0.0",
+    "lodash": "^4.17.21",
     "nodemailer": "^6.6.0",
     "objection": "^2.2.15",
     "pg": "^8.6.0"

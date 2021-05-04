@@ -1,7 +1,7 @@
 const Action = require('./actions')
 const Trigger = require('./trigger')
 const Link = require('./links')
-const {getWorkflowByName} = require('../controllers/workflows_controller')
+const {getWorkflowByName} = require('../controllers/accounts/workflows_controller')
 
 
 const Workflow = (params) => {
