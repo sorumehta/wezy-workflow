@@ -4,6 +4,7 @@ import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import WorkflowCard from "./WorkflowComponents/WorkflowCard";
 import {Button} from "@material-ui/core";
+import {Link} from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -17,6 +18,7 @@ const useStyles = makeStyles((theme) => ({
         width: 500,
         height: 450,
     },
+    link: { textDecoration: "none"}
 }));
 
 const workflowList = [{name: "send emails", id: 1, is_active: true},
@@ -31,9 +33,11 @@ const Workflows = () => {
 
     return (
         <React.Fragment>
+            <Link to={`/workflows/new`} className={classes.link}>
             <Button variant="contained" color="primary" id={"newworkflow"}>
                 New Workflow
             </Button>
+            </Link>
         <div className={classes.root}>
 
             <br />

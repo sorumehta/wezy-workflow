@@ -23,32 +23,28 @@ const useStyles = makeStyles({
     link: { textDecoration: "none"}
 });
 
-const WorkflowCard = ({id, name, isActive}) => {
+const WorkflowFormCard = ({type, attrs}) => {
     const classes = useStyles();
-    const [active, setActive] = React.useState(isActive);
-
-    const handleChange = (event) => {
-        setActive(event.target.checked);
-    };
-
+    console.log("recieved attrs:")
+    console.log(attrs)
     return (
         <Card className={classes.root}>
             <CardContent>
 
                 <Typography >
-                    {name}
+                    {type}
+                </Typography>
+                <Typography >
+                    {Object.keys(attrs).map(attr => typeof attrs[attr] === 'object' ? <p key={attr}>{attr}: {JSON.stringify(attrs[attr],null,2)}</p> : <p key={attr}>{attr}: {attrs[attr]} </p>)}
                 </Typography>
 
-                <Switch checked={active} onChange={handleChange} name="activateWorkflow" />
 
             </CardContent>
             <CardActions>
-                <Link to={`/workflows/${id}`} className={classes.link}>
                     <Button size="small">Details</Button>
-                </Link>
             </CardActions>
         </Card>
     );
 };
 
-export default WorkflowCard;
+export default WorkflowFormCard;
