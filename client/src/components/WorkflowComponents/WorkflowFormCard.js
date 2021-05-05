@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -25,23 +25,18 @@ const useStyles = makeStyles({
 
 const WorkflowFormCard = ({type, attrs}) => {
     const classes = useStyles();
-    console.log("recieved attrs:")
-    console.log(attrs)
+    const [actionType, setActionType] = useState(null)
+    const handleClick = () => {
+        console.log(`You just clicked on action name: ${attrs.name}`)
+    }
+
     return (
         <Card className={classes.root}>
             <CardContent>
 
-                <Typography >
-                    {type}
-                </Typography>
-                <Typography >
-                    {Object.keys(attrs).map(attr => typeof attrs[attr] === 'object' ? <p key={attr}>{attr}: {JSON.stringify(attrs[attr],null,2)}</p> : <p key={attr}>{attr}: {attrs[attr]} </p>)}
-                </Typography>
-
-
             </CardContent>
             <CardActions>
-                    <Button size="small">Details</Button>
+                    <Button size="small" onClick={handleClick}>Save</Button>
             </CardActions>
         </Card>
     );
