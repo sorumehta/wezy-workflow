@@ -110,12 +110,13 @@ const TriggerFormCard = ({attrs, triggerTypes,onUpdate}) => {
                     enableReinitialize={true}
                     initialValues={{
                         triggerType: triggerType,
-                        actionConfig: {}
+                        triggerConfig: {}
                     }}
                     validationSchema={validationSchema}
                     onSubmit={(data,{setSubmitting}) => {
                         setSubmitting(true)
-                        // do stuff
+                        console.log("submitting data:")
+                        console.log(data)
                         setIsSaved(true)
                         onUpdate(attrs.name, data)
                         setSubmitting(false)
@@ -149,7 +150,7 @@ const TriggerFormCard = ({attrs, triggerTypes,onUpdate}) => {
                                                         return (
                                                             <div key={param}>
                                                                 <Field placeholder={param}
-                                                                       name={`actionConfig.${param}.value`}
+                                                                       name={`triggerConfig.${param}.value`}
                                                                        as={TextField}/>
 
                                                             </div>

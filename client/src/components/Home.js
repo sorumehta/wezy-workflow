@@ -5,6 +5,8 @@ import HomeIcon from "@material-ui/icons/Home";
 import TimelineIcon from '@material-ui/icons/Timeline';
 import Workflows from './Workflows'
 import NewWorkflow from "./NewWorkflow";
+import WorkflowDetails from "./WorkflowComponents/WorkflowDetails";
+
 import {
     Drawer,
     List,
@@ -72,12 +74,20 @@ const Home = () => {
                             <Workflows/>
                         </Container>
                     </Route>
-                    <Route exact path="/workflows/new">
+                    <Route exact path="/workflow/new">
                         <Container>
                             <Typography variant="h5" gutterBottom>
                                 New Workflow
                             </Typography>
                             <NewWorkflow/>
+                        </Container>
+                    </Route>
+                    <Route exact path="/workflows/:workflow_id">
+                        <Container>
+                            <Typography variant="h5" gutterBottom>
+                                Workflow detail
+                            </Typography>
+                            <WorkflowDetails/>
                         </Container>
                     </Route>
                 </Grid>

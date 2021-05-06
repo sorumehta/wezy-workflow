@@ -3,6 +3,9 @@ const webhook = require('./triggerTypes/webhook')
 const poll = require('./triggerTypes/poll')
 const cron = require('./triggerTypes/cron')
 
+const allTriggers = () => {
+    return ['webhook']
+}
 const getTriggerByType = (typeName) => {
     if(typeName==='webhook'){
         return webhook
@@ -40,4 +43,4 @@ const Trigger = (params) => {
     return {getName, getTypeName, isAuthed, isTriggerAsync}
 }
 
-module.exports = {Trigger, getTriggerByType}
+module.exports = {Trigger, getTriggerByType,allTriggers}

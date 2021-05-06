@@ -7,6 +7,7 @@ import DialogContent from '@material-ui/core/DialogContent';
 import DialogContentText from '@material-ui/core/DialogContentText';
 import DialogTitle from '@material-ui/core/DialogTitle';
 
+
 const AddWorkflowAction = (props) => {
     const [isTrigger, setIsTrigger] = useState(true)
     const [name, setName] = useState("")
@@ -23,7 +24,7 @@ const AddWorkflowAction = (props) => {
     const handleSubmit = (callback, value, istrigger) => {
         setOpen(false)
         console.log(`name submitted: ${value}`)
-        callback("trigger:"+value, istrigger)
+        callback(value, istrigger)
         if(istrigger){
             setIsTrigger(false) //only one trigger allowed per workflow for now
         }
@@ -38,7 +39,7 @@ const AddWorkflowAction = (props) => {
                 <DialogTitle id="form-dialog-title">Add New {isTrigger ? 'Trigger' : 'Action'}</DialogTitle>
                 <DialogContent>
                     <DialogContentText>
-                        Write a name for this {isTrigger ? 'trigger' : 'action'}
+                        Write a name for this {isTrigger ? 'workflow' : 'action'}
                     </DialogContentText>
                     <TextField
                         autoFocus

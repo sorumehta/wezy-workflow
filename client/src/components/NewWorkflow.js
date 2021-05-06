@@ -29,16 +29,12 @@ const useStyles = makeStyles((theme) => ({
 
 
 const NewWorkflow = () => {
-    // const triggers = [{name: 'new_workflow', type: 'webhook'}]
-    // const actions = [{name: 'add_new_User', type: 'add_user', config: {'username': 'Subodh'}},
-    //     {name: 'send_email_User', type:'send_email', config: {from:'soru.mehta', to: 'subodh.mehra'}},
-    //     {name: 'post_to_CRM', type:'post_to_CRM', config: {url: 'localhost:7890/users'}}]
-    // const links = {start: {next: 'add_new_User'}, add_new_User: {next: 'send_email_User'}, send_email_User: {next: 'post_to_CRM'}, post_to_CRM: {next: 'nil'} }
+
     const [triggers, setTriggers] = useState([])
     const [actions, setActions] = useState([])
     const [links, setLinks] = useState({start: {}})
     const [activeStep, setActiveStep] = useState(0);
-    const [prevActionList, setPrevActionList] = useState(['manual']);
+    const [prevActionList, setPrevActionList] = useState(['manual','start']);
     const [actionTypes, setActionTypes] = useState([])
     const [triggerTypes, setTriggerTypes] = useState([])
 
@@ -110,7 +106,7 @@ const NewWorkflow = () => {
         } else{
             console.log("setting action...")
             let prevLink = ""
-            if(prevActionList.length === 1){
+            if(prevActionList.length === 2){
                 prevLink = "start"
             } else{
                 prevLink = prevActionList[prevActionList.length - 1]
@@ -138,11 +134,66 @@ const NewWorkflow = () => {
     const onUpdateAction = (actionName, data) => {
         console.log(`called onUpdateAction for action name: ${actionName} and data:`)
         console.log(data)
+        setActions(actn => {
+            const actionIdx = actn.findIndex((act => act.name === actionName))
+            console.log(`action index = ${actionIdx}`)
+            actn[actionIdx].type = data.actionType
+            actn[actionIdx].config = data.actionConfig
+            return actn
+        })
+        console.log("current action data:")
+        console.log(actions)
     }
 
-    const onUpdateTrigger = (data) => {
+    const onUpdateTrigger = (triggerName, data) => {
         console.log(`called onUpdateTrigger with data`)
         console.log(data)
+        setTriggers(trig => {
+            trig[0].type = data.triggerType
+            trig[0].config = data.triggerConfig
+            return trig
+        })
+        console.log("current trigger data:")
+        console.log(triggers)
+    }
+
+    const saveWorkflow = () => {
+        const workflow = {}
+        workflow.triggers = triggers
+        const name = triggers[0].name
+        workflow.actions = []
+        actions.forEach(actn => {
+            let thisAction = {}
+            thisAction.name = actn.name
+            thisAction.type = actn.type
+            thisAction.config = {}
+            Object.keys(actn.config).forEach(paramKey => {
+                let configObj = actn.config[paramKey]
+                if(configObj.hasOwnProperty('inputType') && configObj.inputType !== 'manual'){
+                    thisAction.config[paramKey] = `__${configObj.inputType}.${configObj.value}`
+                } else{
+                    thisAction.config[paramKey] = configObj.value
+                }
+            })
+            workflow.actions.push(thisAction)
+        })
+        workflow.links = links
+        console.log("submitting workflow:")
+        console.log(workflow)
+        fetch('/api/v1/accounts/1/workflows',
+            {
+                method: 'POST',
+                body: JSON.stringify({workflow, name}),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => {
+                if(response.ok){
+                    console.log("workflow submitted successfully")
+                } else{
+                    console.error(`ERROR while posting workflow: ${response.status}`)
+                }
+        })
     }
     
     const getActionAttrs = (actionName) => {
@@ -212,7 +263,7 @@ const NewWorkflow = () => {
             <AddWorkflowAction onAdd={onAddAction} />
             <Divider />
             <br />
-            <Button variant="contained" size="large" color="primary" id={"submitworkflow"} onClick={() => console.log("submitted")}>Submit</Button>
+            <Button variant="contained" size="large" color="primary" id={"submitworkflow"} onClick={() => saveWorkflow()}>Submit</Button>
 
         </div>
     );

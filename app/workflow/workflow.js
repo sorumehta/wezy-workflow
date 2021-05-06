@@ -51,8 +51,8 @@ const Workflow = (params) => {
         console.log("checking all triggers:")
         for(let i = 0; i < triggers.length; i++){
             let trigger = triggers[i]
-            console.log(trigger.getType())
-            if(trigger.getType() === triggerType){
+            console.log(trigger.getTypeName())
+            if(trigger.getTypeName() === triggerType){
                 console.log('trigger matched!')
                 return true
             }

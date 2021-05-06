@@ -1,4 +1,4 @@
-import React from 'react';
+import React, {useEffect} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -23,13 +23,32 @@ const useStyles = makeStyles({
     link: { textDecoration: "none"}
 });
 
-const WorkflowCard = ({id, name, isActive}) => {
+const WorkflowCard = ({id, name, isActive, workflow}) => {
     const classes = useStyles();
     const [active, setActive] = React.useState(isActive);
 
     const handleChange = (event) => {
+        console.log(`setting is_active to ${event.target.checked} for id ${id}`)
         setActive(event.target.checked);
     };
+
+    useEffect(() => {
+        console.log(`sending PUT request for id ${id}`)
+        fetch(`/api/v1/accounts/1/workflows/${id}`,
+            {
+                method: 'PUT',
+                body: JSON.stringify({is_active: active}),
+                headers: {
+                    'Content-Type': 'application/json'
+                }
+            }).then(response => {
+            if(response.ok){
+                console.log("workflow submitted successfully")
+            } else{
+                console.error(`ERROR while posting workflow: ${response.status}`)
+            }
+        })
+    },[active])
 
     return (
         <Card className={classes.root}>

@@ -9,7 +9,7 @@ const Email = (params) => {
     }
 
     const requiredParams = () => {
-        return ['from', 'to', 'subject']
+        return ['to', 'subject', 'text']
     }
 
     return {execute, requiredParams}

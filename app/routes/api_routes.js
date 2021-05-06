@@ -1,7 +1,8 @@
 const {resource_routes} = require('./helpers/restful_routes')
 const accounts = require('../controllers/accounts_controller')
 const workflows = require('../controllers/accounts/workflows_controller')
-const {getActionParams, getAllActions, getTriggerParams, getAllTriggers} = require('../controllers/accounts/workflow_actions_controller')
+const {getActionParams, getAllActions} = require('../controllers/accounts/workflow_actions_controller')
+const { getTriggerParams, getAllTriggers} = require('../controllers/accounts/workflow_triggers_controller')
 
 module.exports = (router) => {
     // register

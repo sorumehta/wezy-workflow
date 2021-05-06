@@ -1,12 +1,8 @@
-const {getActionByType} = require('../../workflow/actions')
-const {getTriggerByType} = require('../../workflow/trigger')
+const {getActionByType,allActions} = require('../../workflow/actions')
 
 const getAllActions = async (ctx) => {
-    ctx.body = {data: ['email','http']}
-}
-
-const getAllTriggers = async (ctx) => {
-    ctx.body = {data: ['webhook','poll', 'cron']}
+    const data = allActions()
+    ctx.body = {data}
 }
 
 const getActionParams = async (ctx) => {
@@ -23,20 +19,6 @@ const getActionParams = async (ctx) => {
 
 }
 
-const getTriggerParams = async (ctx) => {
-    try{
-        const triggerTypeName = ctx.params.trigger_type
-        const triggerType = getTriggerByType(triggerTypeName)
-        const req_params = triggerType.getRequiredParams()
-        ctx.body = {data: req_params}
-    }
-    catch (e){
-        console.log(e)
-        ctx.status = 500
-    }
-
-}
-
 module.exports = {
-    getAllActions, getActionParams, getAllTriggers, getTriggerParams
+    getAllActions, getActionParams
 }

@@ -5,6 +5,11 @@ const Function = require('./actionTypes/function')
 const Email = require('./actionTypes/email')
 //const Auth = require('./auth')
 
+
+const allActions = async (ctx) => {
+    return ['email,http']
+}
+
 const getActionByType = (type) => {
     if(type === 'start'){
         return 'start'
@@ -66,4 +71,4 @@ const Action = (params) => {
 }
 
 
-module.exports = {Action, getActionByType}
+module.exports = {Action, getActionByType,allActions}

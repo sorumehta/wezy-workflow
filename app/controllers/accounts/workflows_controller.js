@@ -31,19 +31,21 @@ const create = async (ctx) => {
 const index = async (ctx) => {
     const accountId = parseInt(ctx.params.account_id)
     const workflows = await Account.relatedQuery('workflows').for(parseInt(accountId))
-    ctx.body = {success: true, data: {workflows}}
+    ctx.body = {success: true, data: workflows}
 }
 
 const show = async (ctx) => {
     const workflow_id = parseInt(ctx.params.workflow_id)
     const accountId = parseInt(ctx.params.account_id)
     const workflow = await Account.relatedQuery('workflows').for(accountId).findById(workflow_id)
-    ctx.body = {success: true, data: {workflow}}
+    ctx.body = {success: true, data: workflow}
 }
 
 const update = async (ctx) => {
     const workflow_id = parseInt(ctx.params.workflow_id)
     const accountId = parseInt(ctx.params.account_id)
+    console.log("workflow patch body:")
+    console.log(JSON.stringify(ctx.request.body,null,2))
     await Account.relatedQuery('workflows').for(accountId).findById(workflow_id).patch(ctx.request.body)
     ctx.body = {success: true}
 }
@@ -61,6 +63,7 @@ module.exports = {
     index,
     show,
     update,
-    destroy
+    destroy,
+    getWorkflowByName
 }
 
