@@ -1,3 +1,4 @@
+const axios = require('axios').default;
 
 
 const Http = (options) => {
@@ -7,11 +8,12 @@ const Http = (options) => {
         const {url, method, data, params, headers} = options
         console.log(`requesting url ${url} with method ${method} and data:`)
         console.log(data)
-        return {status: 200}
+        const result = await axios(options);
+        return {status: 200, data: result.data}
     }
 
     const requiredParams = () => {
-        return ['url', 'method', 'data', 'params', 'headers']
+        return ['url', 'method', 'data']
     }
 
     return {execute, requiredParams}
