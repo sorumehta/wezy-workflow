@@ -2,11 +2,15 @@
 const Account = require('../../models/Account')
 
 
-const getWorkflowByName = (workflowName) => {
-    if(workflowName==="test"){
-        return 'test'
+const getWorkflowByName = async (workflowName, account_id) => {
+    const workflows = await Account.relatedQuery('workflows').for(account_id).where('name', workflowName);
+    if(workflows.length > 0){
+        console.log("workflow found with name "+workflowName)
+
+        return workflows[0]
+    } else{
+        return null
     }
-    return null
 }
 
 

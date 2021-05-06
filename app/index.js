@@ -44,12 +44,12 @@ const server = app.listen(config.port, () => {
 
 //Start background workers
 
-// const email_worker = spawn('node', ['./app/workers/email_worker.js']);
-//
-// email_worker.stdout.on('data', (data) => {
-//     console.log(`email_worker stdout:\n${data}`);
-// });
-//
-// email_worker.stderr.on('data', (data) => {
-//     console.error(`email_worker stderr:\n${data}`);
-// });
+const email_worker = spawn('node', ['./app/workers/email_worker.js']);
+
+email_worker.stdout.on('data', (data) => {
+    console.log(`email_worker stdout:\n${data}`);
+});
+
+email_worker.stderr.on('data', (data) => {
+    console.error(`email_worker stderr:\n${data}`);
+});

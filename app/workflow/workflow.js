@@ -5,8 +5,10 @@ const {getWorkflowByName} = require('../controllers/accounts/workflows_controlle
 
 
 const Workflow = (params) => {
+    console.log("workflow params:")
+    console.log(JSON.stringify(params, null, 2))
     const {id, name, is_active} = params
-    let {links, actions, triggers} = params
+    let {links, actions, triggers} = params.workflow
 
     //init actions
     const actionsObj = {}
@@ -79,8 +81,8 @@ const Workflow = (params) => {
     return {canTriggerWorkflow, getLinks, getAction, isWorkflowActive, getWorkflowName}
 }
 
-const initWorkflowByName = (workflowName) => {
-    const workflowParams = getWorkflowByName(workflowName)
+const initWorkflowByName = async (workflowName) => {
+    const workflowParams = await getWorkflowByName(workflowName,1)
     if(workflowParams){
 
         return Workflow(workflowParams)

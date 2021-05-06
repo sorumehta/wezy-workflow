@@ -138,7 +138,7 @@ const TriggerFormCard = ({attrs, triggerTypes,onUpdate}) => {
                                         <div>
                                             {typeof reqParams === 'string' ?
                                                 <div>
-                                                    <Field value={reqParams} InputProps={{
+                                                    <Field value={reqParams} helperText="use this path to trigger the workflow" InputProps={{
                                                         readOnly: true,
                                                     }} as={TextField}/>
 

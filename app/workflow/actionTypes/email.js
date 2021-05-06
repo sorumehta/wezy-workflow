@@ -4,8 +4,8 @@ const Email = (params) => {
 
     const execute = async () => {
         console.log("executing email action")
-        await enqueueMail(params)
-        return {status: 200, result: `Email sent from ${params.from} to ${params.to}`}
+        await enqueueMail({...params, from: process.env.FROM_EMAIL})
+        return {status: 200, result: `Email sent from ${process.env.FROM_EMAIL} to ${params.to}`}
     }
 
     const requiredParams = () => {
