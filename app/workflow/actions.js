@@ -3,36 +3,37 @@ const Http = require('./actionTypes/http')
 const Condition = require('./actionTypes/condition')
 const Function = require('./actionTypes/function')
 const Email = require('./actionTypes/email')
-const Auth = require('./auth')
+//const Auth = require('./auth')
 
+const getActionByType = (type) => {
+    if(type === 'start'){
+        return 'start'
+    }
+    else if(type === 'http'){
+        return Http
+    }
+    else if(type === 'condition'){
+        return Condition
+    }
+    else if(type === 'function') {
+        return Function
+    }
+    else if(type === 'email') {
+        return Email
+    }
+    throw `no matching action type object for ${type}`
+}
 
 const Action = (params) => {
     console.log(`initialising action with params:`)
     console.log(JSON.stringify(params, null, 2))
     const name = params.name
-    const authParams = params.auth_params
+    //const authParams = params.auth_params
     const typeName = params.type
 
-    const _getActionByType = (type) => {
-        if(type === 'start'){
-            return 'start'
-        }
-        else if(type === 'http'){
-            return Http
-        }
-        else if(type === 'condition'){
-            return Condition
-        }
-        else if(type === 'function') {
-            return Function
-        }
-        else if(type === 'email') {
-            return Email
-        }
-        throw `no matching action type object for ${type}`
-    }
 
-    const actionType = _getActionByType(params.type)
+
+    const actionType = getActionByType(params.type)
     const actionConfig = ActionConfig(params.config)
 
     const getName = () => {
@@ -65,4 +66,4 @@ const Action = (params) => {
 }
 
 
-module.exports = Action
+module.exports = {Action, getActionByType}

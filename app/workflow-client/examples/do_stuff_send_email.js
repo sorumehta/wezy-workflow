@@ -70,13 +70,13 @@ const workflow = {
             "next": "post_data_to_crm"
         },
         "send_http_to_customer":{
-            "next":'send_email'
+            "next":"send_email"
         },
         "send_email": {
             "next": "nil"
         },
         "send_http_to_agent":{
-            "next":'nil'
+            "next":"nil"
         },
         "post_data_to_crm":{
             "next":"IF"

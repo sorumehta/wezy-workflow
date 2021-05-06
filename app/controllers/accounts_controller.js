@@ -3,18 +3,24 @@ const {hashPassword} = require('../helpers/auth_helpers')
 
 const create = async (ctx) => {
     console.log(' postAccounts')
-    const name = ctx.request.body.username
+    const username = ctx.request.body.username
     const email = ctx.request.body.email
     const password = ctx.request.body.password
-    if (!name || !email || !password) {
+    if (!username || !email || !password) {
         console.log("Bad Request")
         ctx.status = 400
         ctx.body = {success: false}
     } else {
-        const hashedBody = await hashPassword({name, email, password})
-        const newAccount = await Account.query().insert({hashedBody})
-        console.log(`newAccount.id: ${newAccount.id}`)
-        ctx.body = {id: newAccount.id, username: newAccount.username, email: newAccount.email}
+        const existingUsers = await Account.query().where('username',username).orWhere('email',email)
+        if(existingUsers.length > 0){
+            ctx.status = 409
+        } else {
+            const hashedBody = await hashPassword({username, email, password})
+            const newAccount = await Account.query().insert(hashedBody)
+            console.log(`newAccount.id: ${newAccount.id}`)
+            ctx.body = {id: newAccount.id, username: newAccount.username, email: newAccount.email}
+        }
+
     }
 }
 

@@ -1,5 +1,6 @@
 import React, {useEffect, useState} from 'react';
 import WorkflowFormCard from "./WorkflowComponents/WorkflowFormCard";
+import TriggerFormCard from "./WorkflowComponents/TriggerFormCard";
 import AddWorkflowAction from "./WorkflowComponents/AddWorkflowAction";
 import Stepper from '@material-ui/core/Stepper';
 import Step from '@material-ui/core/Step';
@@ -36,11 +37,60 @@ const NewWorkflow = () => {
     const [triggers, setTriggers] = useState([])
     const [actions, setActions] = useState([])
     const [links, setLinks] = useState({start: {}})
-    const [workflowName, setWorkflowName] = useState("")
-    const classes = useStyles();
-    const [activeStep, setActiveStep] = React.useState(0);
-    const [prevAction, setPrevAction] = React.useState(null);
+    const [activeStep, setActiveStep] = useState(0);
+    const [prevActionList, setPrevActionList] = useState(['manual']);
+    const [actionTypes, setActionTypes] = useState([])
+    const [triggerTypes, setTriggerTypes] = useState([])
 
+
+    const classes = useStyles();
+
+    useEffect(() => {
+        fetch('/api/v1/actions').then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error("Network response was not ok.");
+        })
+            .then(function (jsonResponse) {
+                console.log("Successful response:");
+                console.log(jsonResponse);
+                if (jsonResponse.data) {
+                    setActionTypes(jsonResponse.data);
+                } else {
+                    console.error("ERROR no action types returned from server");
+                }
+            })
+            .catch(function (error) {
+                console.log(
+                    "There has been a problem with your fetch operation: ",
+                    error.message
+                );
+            });
+
+        fetch('/api/v1/triggers').then(response => {
+            if (response.ok) {
+                return response.json();
+            }
+            throw new Error("Network response was not ok.");
+        })
+            .then(function (jsonResponse) {
+                console.log("Successful trigger types response:");
+                console.log(jsonResponse);
+                if (jsonResponse.data) {
+                    setTriggerTypes(jsonResponse.data);
+                } else {
+                    console.error("ERROR no action types returned from server");
+                }
+            })
+            .catch(function (error) {
+                console.log(
+                    "There has been a problem with your fetch trigger operation: ",
+                    error.message
+                );
+            });
+
+    },[])
 
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
@@ -50,9 +100,6 @@ const NewWorkflow = () => {
         setActiveStep((prevActiveStep) => prevActiveStep - 1);
     };
 
-    const handleReset = () => {
-        setActiveStep(0);
-    };
     const onAddAction = (thisActionName, isTrigger) => {
         console.log("**************onAddChild***********")
         console.log(`thisActionName = ${thisActionName}, isTrigger = ${isTrigger}`)
@@ -63,12 +110,12 @@ const NewWorkflow = () => {
         } else{
             console.log("setting action...")
             let prevLink = ""
-            if(prevAction === null){
+            if(prevActionList.length === 1){
                 prevLink = "start"
             } else{
-                prevLink = prevAction
+                prevLink = prevActionList[prevActionList.length - 1]
             }
-            setPrevAction(thisActionName)
+            setPrevActionList([...prevActionList, thisActionName])
             console.log(`prevLink: ${prevLink}`)
             setLinks(old_links => {
                 console.log("prevLinks")
@@ -86,11 +133,16 @@ const NewWorkflow = () => {
         console.log(triggers)
         console.log("actions:")
         console.log(actions)
-
     }
 
-    const onUpdateAction = (actionName, params) => {
+    const onUpdateAction = (actionName, data) => {
+        console.log(`called onUpdateAction for action name: ${actionName} and data:`)
+        console.log(data)
+    }
 
+    const onUpdateTrigger = (data) => {
+        console.log(`called onUpdateTrigger with data`)
+        console.log(data)
     }
     
     const getActionAttrs = (actionName) => {
@@ -128,7 +180,11 @@ const NewWorkflow = () => {
                     <Step key={action.attrs.name}>
                         <StepLabel>{action.attrs.name}</StepLabel>
                         <StepContent>
-                            <WorkflowFormCard type={action.type} attrs={action.attrs} />
+                            {action.type === 'trigger' ?
+                                <TriggerFormCard attrs={action.attrs} triggerTypes={triggerTypes} onUpdate={onUpdateTrigger}/>
+                                :
+                                <WorkflowFormCard attrs={action.attrs} actionTypes={actionTypes} prevActions={prevActionList.slice(0,prevActionList.length-1)} onUpdate={onUpdateAction}/>
+                            }
                             <div className={classes.actionsContainer}>
                                 <div>
                                     <Button
@@ -153,7 +209,7 @@ const NewWorkflow = () => {
                     </Step>
                 ))}
             </Stepper>
-            <AddWorkflowAction onAdd={onAddAction} onUpdate={onUpdateAction}/>
+            <AddWorkflowAction onAdd={onAddAction} />
             <Divider />
             <br />
             <Button variant="contained" size="large" color="primary" id={"submitworkflow"} onClick={() => console.log("submitted")}>Submit</Button>

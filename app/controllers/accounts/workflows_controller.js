@@ -1,26 +1,28 @@
 
+const Account = require('../../models/Account')
+
 
 const getWorkflowByName = (workflowName) => {
     if(workflowName==="test"){
-        return test_workflow
+        return 'test'
     }
     return null
 }
 
-const Account = require('../../models/Account')
 
 const create = async (ctx) => {
     const account_id = parseInt(ctx.params.account_id)
-    const workflow_config = ctx.request.body
-    if(!workflow_config.actions || !workflow_config.links){
-        ctx.status = BAD_REQUEST
+    const {workflow, name} = ctx.request.body
+    if(!workflow || !workflow.actions || !workflow.links || !workflow.triggers || !name){
+        ctx.status = 400
         ctx.body = {success: false}
     } else{
-        if (typeof workflow_config.actions === 'object' && typeof workflow_config.links === 'object') {
-            const workflow = await Account.relatedQuery('workflows').for(account_id).insert(workflow_config)
-            ctx.body = {success: true, data: {workflow}}
+        if (typeof workflow.actions === 'object' && typeof workflow.links === 'object' && typeof workflow.triggers === 'object') {
+            console.log("looks good!")
+            const new_workflow = await Account.relatedQuery('workflows').for(account_id).insert({workflow, name})
+            ctx.body = {success: true, data: {new_workflow}}
         } else {
-            ctx.status = BAD_REQUEST
+            ctx.status = 400
             ctx.body = {success: false}
         }
     }
@@ -53,8 +55,6 @@ const destroy = async (ctx) => {
     await account.$relatedQuery('workflows').for(accountId).deleteById(workflow_id)
     ctx.body = {success: true}
 }
-
-
 
 module.exports = {
     create,

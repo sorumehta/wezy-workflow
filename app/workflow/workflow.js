@@ -1,5 +1,5 @@
-const Action = require('./actions')
-const Trigger = require('./trigger')
+const {Action} = require('./actions')
+const {Trigger} = require('./trigger')
 const Link = require('./links')
 const {getWorkflowByName} = require('../controllers/accounts/workflows_controller')
 
@@ -40,7 +40,7 @@ const Workflow = (params) => {
     const _getTrigger = (triggerType) => {
         for(let i = 0; i < triggers.length; i++){
             let trigger = triggers[i]
-            if(trigger.getType() === triggerType){
+            if(trigger.getTypeName() === triggerType){
                 return trigger
             }
         }

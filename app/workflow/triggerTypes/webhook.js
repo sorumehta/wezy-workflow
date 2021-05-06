@@ -1,5 +1,9 @@
 const workflowExecution = require('../execution')
 
+const getRequiredParams = () => {
+    return "/workflow/trigger/webhook/:workflow_name"
+}
+
 const listener = async (ctx) => {
     const workflowName = ctx.params.workflow_name
     const data = ctx.request.body
@@ -10,4 +14,4 @@ const listener = async (ctx) => {
     return result
 }
 
-module.exports = {listener} //temp
+module.exports = {listener, getRequiredParams} //temp

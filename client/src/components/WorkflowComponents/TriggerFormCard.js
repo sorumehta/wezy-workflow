@@ -14,7 +14,7 @@ import DoneIcon from '@material-ui/icons/Done';
 import * as yup from 'yup';
 
 const validationSchema = yup.object({
-    actionType: yup.string().required()
+    triggerType: yup.string().required()
 })
 
 const useStyles = makeStyles((theme) =>({
@@ -43,9 +43,9 @@ const useStyles = makeStyles((theme) =>({
     }
 }));
 
-const WorkflowFormCard = ({attrs, actionTypes, prevActions, onUpdate}) => {
+const TriggerFormCard = ({attrs, triggerTypes,onUpdate}) => {
     const classes = useStyles();
-    const [actionType, setActionType] = useState(null)
+    const [triggerType, setTriggerType] = useState(null)
     const [reqParams, setReqParams] = useState([])
     const [isSaved, setIsSaved] = useState(false)
     //const reqParams = {email: ['to', 'subject', 'text'], http: ['url','method','params','body']}
@@ -54,16 +54,16 @@ const WorkflowFormCard = ({attrs, actionTypes, prevActions, onUpdate}) => {
         console.log(`You just clicked on action name: ${attrs.name}`)
     }
 
-    const handleActionChange = (actionTypeValue) => {
-        console.log(`actionType value changed to ${actionTypeValue}`)
-        setActionType(actionTypeValue)
+    const handleActionChange = (triggerTypeValue) => {
+        console.log(`triggerType value changed to ${triggerTypeValue}`)
+        setTriggerType(triggerTypeValue)
     }
 
     useEffect(() => {
         //get required parameters for the current action type
-        if(actionType) {
+        if(triggerType) {
             console.log("making fetch request for getting required params")
-            fetch(`/api/v1/actions/params/${actionType}`).then(response => {
+            fetch(`/api/v1/triggers/params/${triggerType}`).then(response => {
                 if (response.ok) {
                     return response.json();
                 }
@@ -85,7 +85,7 @@ const WorkflowFormCard = ({attrs, actionTypes, prevActions, onUpdate}) => {
                     );
                 });
         }
-    }, [actionType])
+    }, [triggerType])
 
     return (
         <Card className={classes.root}>
@@ -99,13 +99,17 @@ const WorkflowFormCard = ({attrs, actionTypes, prevActions, onUpdate}) => {
                     <Avatar className={classes.red}>
                         <ErrorOutlineIcon />
                     </Avatar>
+
                 }
             />
             <CardContent>
+                <Typography variant="h5" component="h2" gutterBottom>
+                    Trigger
+                </Typography>
                 <Formik
                     enableReinitialize={true}
                     initialValues={{
-                        actionType: actionType,
+                        triggerType: triggerType,
                         actionConfig: {}
                     }}
                     validationSchema={validationSchema}
@@ -119,35 +123,43 @@ const WorkflowFormCard = ({attrs, actionTypes, prevActions, onUpdate}) => {
                 >
                     {({values, isSubmitting}) => (
                         <Form >
-                            <InputLabel id={'select-action-type'}>Action Type</InputLabel>
-                            <Field id={'select-action-type'} type={'select'} name={'actionType'} as={Select} onChange={(e) => {
+                            <InputLabel id={'select-action-type'}>Trigger Type</InputLabel>
+                            <Field id={'select-action-type'} type={'select'} name={'triggerType'} as={Select} onChange={(e) => {
                                 handleActionChange(e.target.value)
                             }}>
-                                {actionTypes.map(type => (
+                                {triggerTypes.map(type => (
                                     <MenuItem key={type} value={type}>{type}</MenuItem>
                                 ))}
                             </Field>
-                            {values.actionType ?
-                            <FieldArray name={'actionTypes'}>
-                                {arrayHelpers => (
-                                    <div>
-                                        {reqParams.map((param,i) => {
+                            {values.triggerType ?
+                                <FieldArray name={'triggerTypes'}>
+                                    {arrayHelpers => (
+                                        <div>
+                                            {typeof reqParams === 'string' ?
+                                                <div>
+                                                    <Field value={reqParams} InputProps={{
+                                                        readOnly: true,
+                                                    }} as={TextField}/>
 
-                                            return (
-                                                <div key={param}>
-
-                                                    <Field type={'select'} name={`actionConfig.${param}.inputType`}  defaultValue={'manual'} as={Select} >
-                                                        {prevActions.map(prevAction => (
-                                                            <MenuItem key={prevAction} value={prevAction}>{prevAction}</MenuItem>
-                                                        ))}
-                                                    </Field>
-                                                    <Field placeholder={param} name={`actionConfig.${param}.value`} as={TextField} />
                                                 </div>
-                                            )
-                                        })}
-                                    </div>
-                                )}
-                            </FieldArray>
+                                                :
+
+                                                    reqParams.map((param, i) => {
+
+                                                        return (
+                                                            <div key={param}>
+                                                                <Field placeholder={param}
+                                                                       name={`actionConfig.${param}.value`}
+                                                                       as={TextField}/>
+
+                                                            </div>
+                                                        )
+                                                    })
+                                                }
+
+                                        </div>
+                                    )}
+                                </FieldArray>
                                 : <div></div> }
 
                             <div>
@@ -165,4 +177,4 @@ const WorkflowFormCard = ({attrs, actionTypes, prevActions, onUpdate}) => {
     );
 };
 
-export default WorkflowFormCard;
+export default TriggerFormCard;

@@ -23,7 +23,7 @@ const AddWorkflowAction = (props) => {
     const handleSubmit = (callback, value, istrigger) => {
         setOpen(false)
         console.log(`name submitted: ${value}`)
-        callback(value, istrigger)
+        callback("trigger:"+value, istrigger)
         if(istrigger){
             setIsTrigger(false) //only one trigger allowed per workflow for now
         }
@@ -31,7 +31,7 @@ const AddWorkflowAction = (props) => {
 
     return (
         <div>
-            <Button variant="outlined" color="secondary" onClick={handleClickOpen}>
+            <Button variant="contained" color="secondary" onClick={handleClickOpen}>
                 Add
             </Button>
             <Dialog open={open} onClose={handleClose} aria-labelledby="form-dialog-title">

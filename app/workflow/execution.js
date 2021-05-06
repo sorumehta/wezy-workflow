@@ -1,5 +1,5 @@
 const {initWorkflowByName} = require('./workflow')
-const Action = require('./actions')
+const {Action} = require('./actions')
 const ExecData = require('./execResults')
 
 const WorkflowExecution = (workflowName, triggerType, token, workflowInput) => {

@@ -1,4 +1,20 @@
 const Auth = require('./auth')
+const webhook = require('./triggerTypes/webhook')
+const poll = require('./triggerTypes/poll')
+const cron = require('./triggerTypes/cron')
+
+const getTriggerByType = (typeName) => {
+    if(typeName==='webhook'){
+        return webhook
+    }
+    else if(typeName==='poll'){
+        return poll
+    }
+    else if(typeName==='cron'){
+        return cron
+    }
+    throw `no matching trigger type found for ${typeName}`
+}
 
 const Trigger = (params) => {
     console.log(`initialising trigger with params:`)
@@ -9,7 +25,7 @@ const Trigger = (params) => {
         return name
     }
 
-    const getType = () => {
+    const getTypeName = () => {
         return type
     }
 
@@ -21,7 +37,7 @@ const Trigger = (params) => {
         return true
     }
 
-    return {getName, getType, isAuthed, isTriggerAsync}
+    return {getName, getTypeName, isAuthed, isTriggerAsync}
 }
 
-module.exports = Trigger
+module.exports = {Trigger, getTriggerByType}
