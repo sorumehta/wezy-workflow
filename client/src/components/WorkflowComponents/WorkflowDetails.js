@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import Step from "@material-ui/core/Step";
 import StepLabel from "@material-ui/core/StepLabel";
 import StepContent from "@material-ui/core/StepContent";
@@ -10,6 +10,7 @@ import ActionDetailsCard from "./ActionDetailsCard";
 import {useParams} from "react-router-dom";
 import {makeStyles} from "@material-ui/core/styles";
 import Typography from "@material-ui/core/Typography";
+import {UserContext} from "../../UserContext";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -35,6 +36,7 @@ const WorkflowDetails = ({name, config}) => {
     const [activeStep, setActiveStep] = useState(0);
     const classes = useStyles();
     const { account_id } = useParams();
+    const { user } = useContext(UserContext);
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
     };
@@ -44,28 +46,35 @@ const WorkflowDetails = ({name, config}) => {
     };
 
     useEffect(() => {
-        fetch(`/api/v1/accounts/${account_id}/workflows/${workflow_id}`)
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                }
-                throw new Error("Network response was not ok.");
-            })
-            .then(function (jsonResponse) {
-                console.log("Successful trigger types response:");
-                console.log(jsonResponse);
-                if (jsonResponse.data) {
-                    setWorkflow(jsonResponse.data);
-                } else {
-                    console.error("ERROR no workflows returned from server");
-                }
-            })
-            .catch(function (error) {
-                console.log(
-                    "There has been a problem with your fetch trigger operation: ",
-                    error.message
-                );
-            });
+        if (user) {
+            const bearer = "Bearer " + user.token;
+            const headers = {
+                Authorization: bearer,
+                "Content-Type": "application/json",
+            };
+            fetch(`/api/v1/accounts/${account_id}/workflows/${workflow_id}`, {headers: headers})
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    throw new Error("Network response was not ok.");
+                })
+                .then(function (jsonResponse) {
+                    console.log("Successful trigger types response:");
+                    console.log(jsonResponse);
+                    if (jsonResponse.data) {
+                        setWorkflow(jsonResponse.data);
+                    } else {
+                        console.error("ERROR no workflows returned from server");
+                    }
+                })
+                .catch(function (error) {
+                    console.log(
+                        "There has been a problem with your fetch trigger operation: ",
+                        error.message
+                    );
+                });
+        }
     },[])
 
     let workflowActions = []

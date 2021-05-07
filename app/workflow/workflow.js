@@ -70,19 +70,15 @@ const Workflow = (params) => {
         throw `action ${actionName} does not exist in the workflow`
     }
 
-    const canTriggerWorkflow = (triggerType, token) => {
-        if(_hasTrigger(triggerType) && is_active){
-            return _getTrigger(triggerType).isAuthed(token)
-        } else{
-            return false
-        }
+    const canTriggerWorkflow = (triggerType) => {
+        return _hasTrigger(triggerType) && is_active;
     }
 
     return {canTriggerWorkflow, getLinks, getAction, isWorkflowActive, getWorkflowName}
 }
 
-const initWorkflowByName = async (workflowName) => {
-    const workflowParams = await getWorkflowByName(workflowName,1)
+const initWorkflowByName = async (workflowName, account_id) => {
+    const workflowParams = await getWorkflowByName(workflowName,account_id)
     if(workflowParams){
 
         return Workflow(workflowParams)

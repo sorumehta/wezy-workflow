@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import WorkflowFormCard from "./WorkflowComponents/WorkflowFormCard";
 import TriggerFormCard from "./WorkflowComponents/TriggerFormCard";
 import AddWorkflowAction from "./WorkflowComponents/AddWorkflowAction";
@@ -10,6 +10,7 @@ import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
 import {useParams} from "react-router-dom";
+import {UserContext} from "../UserContext";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -30,7 +31,6 @@ const useStyles = makeStyles((theme) => ({
 
 
 const NewWorkflow = () => {
-
     const [triggers, setTriggers] = useState([])
     const [actions, setActions] = useState([])
     const [links, setLinks] = useState({start: {}})
@@ -39,53 +39,61 @@ const NewWorkflow = () => {
     const [actionTypes, setActionTypes] = useState([])
     const [triggerTypes, setTriggerTypes] = useState([])
     const { account_id } = useParams();
+    const { user } = useContext(UserContext);
 
     const classes = useStyles();
 
     useEffect(() => {
-        fetch('/api/v1/actions').then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            throw new Error("Network response was not ok.");
-        })
-            .then(function (jsonResponse) {
-                console.log("Successful response:");
-                console.log(jsonResponse);
-                if (jsonResponse.data) {
-                    setActionTypes(jsonResponse.data);
-                } else {
-                    console.error("ERROR no action types returned from server");
+        if (user) {
+            const bearer = "Bearer " + user.token;
+            const headers = {
+                Authorization: bearer,
+                "Content-Type": "application/json",
+            };
+            fetch('/api/v1/actions', {headers: headers}).then(response => {
+                if (response.ok) {
+                    return response.json();
                 }
+                throw new Error("Network response was not ok.");
             })
-            .catch(function (error) {
-                console.log(
-                    "There has been a problem with your fetch operation: ",
-                    error.message
-                );
-            });
+                .then(function (jsonResponse) {
+                    console.log("Successful response:");
+                    console.log(jsonResponse);
+                    if (jsonResponse.data) {
+                        setActionTypes(jsonResponse.data);
+                    } else {
+                        console.error("ERROR no action types returned from server");
+                    }
+                })
+                .catch(function (error) {
+                    console.log(
+                        "There has been a problem with your fetch operation: ",
+                        error.message
+                    );
+                });
 
-        fetch('/api/v1/triggers').then(response => {
-            if (response.ok) {
-                return response.json();
-            }
-            throw new Error("Network response was not ok.");
-        })
-            .then(function (jsonResponse) {
-                console.log("Successful trigger types response:");
-                console.log(jsonResponse);
-                if (jsonResponse.data) {
-                    setTriggerTypes(jsonResponse.data);
-                } else {
-                    console.error("ERROR no action types returned from server");
+            fetch('/api/v1/triggers', {headers: headers}).then(response => {
+                if (response.ok) {
+                    return response.json();
                 }
+                throw new Error("Network response was not ok.");
             })
-            .catch(function (error) {
-                console.log(
-                    "There has been a problem with your fetch trigger operation: ",
-                    error.message
-                );
-            });
+                .then(function (jsonResponse) {
+                    console.log("Successful trigger types response:");
+                    console.log(jsonResponse);
+                    if (jsonResponse.data) {
+                        setTriggerTypes(jsonResponse.data);
+                    } else {
+                        console.error("ERROR no action types returned from server");
+                    }
+                })
+                .catch(function (error) {
+                    console.log(
+                        "There has been a problem with your fetch trigger operation: ",
+                        error.message
+                    );
+                });
+        }
 
     },[])
 
@@ -170,9 +178,9 @@ const NewWorkflow = () => {
             thisAction.config = {}
             Object.keys(actn.config).forEach(paramKey => {
                 let configObj = actn.config[paramKey]
-                if(configObj.hasOwnProperty('inputType') && configObj.inputType !== 'manual'){
+                if (configObj.hasOwnProperty('inputType') && configObj.inputType !== 'manual') {
                     thisAction.config[paramKey] = `__${configObj.inputType}.${configObj.value}`
-                } else{
+                } else {
                     thisAction.config[paramKey] = configObj.value
                 }
             })
@@ -181,20 +189,25 @@ const NewWorkflow = () => {
         workflow.links = links
         console.log("submitting workflow:")
         console.log(workflow)
-        fetch(`/api/v1/accounts/${account_id}/workflows`,
-            {
-                method: 'POST',
-                body: JSON.stringify({workflow, name}),
-                headers: {
-                    'Content-Type': 'application/json'
-                }
-            }).then(response => {
-                if(response.ok){
+        if (user) {
+            const bearer = "Bearer " + user.token;
+            const headers = {
+                Authorization: bearer,
+                "Content-Type": "application/json",
+            };
+            fetch(`/api/v1/accounts/${account_id}/workflows`,
+                {
+                    method: 'POST',
+                    body: JSON.stringify({workflow, name}),
+                    headers: headers
+                }).then(response => {
+                if (response.ok) {
                     console.log("workflow submitted successfully")
-                } else{
+                } else {
                     console.error(`ERROR while posting workflow: ${response.status}`)
                 }
-        })
+            })
+        }
     }
     
     const getActionAttrs = (actionName) => {
@@ -217,7 +230,7 @@ const NewWorkflow = () => {
                 let actionAttrs = getActionAttrs(nextAction)
                 workflowActions.push({type: 'action', attrs: actionAttrs});
                 nextAction = links[nextAction].next
-            };
+            }
         }
 
         console.log('workflowActions: ')

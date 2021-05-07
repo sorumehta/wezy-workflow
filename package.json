@@ -20,6 +20,7 @@
     "axios": "^0.21.1",
     "bcrypt": "^5.0.1",
     "dotenv": "^8.2.0",
+    "jsonwebtoken": "^8.5.1",
     "knex": "^0.21.19",
     "koa": "^2.13.1",
     "koa-bodyparser": "^4.3.0",

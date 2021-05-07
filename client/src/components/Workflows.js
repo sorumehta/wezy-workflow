@@ -1,10 +1,11 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import WorkflowCard from "./WorkflowComponents/WorkflowCard";
 import {Button} from "@material-ui/core";
 import {Link, useParams} from "react-router-dom";
+import {UserContext} from "../UserContext";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -23,31 +24,39 @@ const useStyles = makeStyles((theme) => ({
 
 const Workflows = () => {
     const classes = useStyles();
+    const { user } = useContext(UserContext);
     const { account_id } = useParams();
     const [workflowList, setWorkflowList] = useState([])
     useEffect(() => {
-        fetch(`/api/v1/accounts/${account_id}/workflows`)
-            .then(response => {
-                if (response.ok) {
-                    return response.json();
-                }
-                throw new Error("Network response was not ok.");
-            })
-            .then(function (jsonResponse) {
-                console.log("Successful trigger types response:");
-                console.log(jsonResponse);
-                if (jsonResponse.data) {
-                    setWorkflowList(jsonResponse.data);
-                } else {
-                    console.error("ERROR no workflows returned from server");
-                }
-            })
-            .catch(function (error) {
-                console.log(
-                    "There has been a problem with your fetch trigger operation: ",
-                    error.message
-                );
-            });
+        if (user) {
+            const bearer = "Bearer " + user.token;
+            const headers = {
+                Authorization: bearer,
+                "Content-Type": "application/json",
+            };
+            fetch(`/api/v1/accounts/${account_id}/workflows`, {headers: headers})
+                .then(response => {
+                    if (response.ok) {
+                        return response.json();
+                    }
+                    throw new Error("Network response was not ok.");
+                })
+                .then(function (jsonResponse) {
+                    console.log("Successful trigger types response:");
+                    console.log(jsonResponse);
+                    if (jsonResponse.data) {
+                        setWorkflowList(jsonResponse.data);
+                    } else {
+                        console.error("ERROR no workflows returned from server");
+                    }
+                })
+                .catch(function (error) {
+                    console.log(
+                        "There has been a problem with your fetch trigger operation: ",
+                        error.message
+                    );
+                });
+        }
 
     },[])
     return (

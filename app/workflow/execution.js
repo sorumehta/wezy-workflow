@@ -2,13 +2,13 @@ const {initWorkflowByName} = require('./workflow')
 const {Action} = require('./actions')
 const ExecData = require('./execResults')
 
-const WorkflowExecution = async (workflowName, triggerType, token, workflowInput) => {
+const WorkflowExecution = async (workflowName, triggerType, workflowInput, account_id) => {
     console.log("workflow input:")
     console.log(workflowInput)
     let executionData = {}
     let canTrigger = false
-    const workflow = await initWorkflowByName(workflowName)
-    if(workflow.canTriggerWorkflow(triggerType, token)){
+    const workflow = await initWorkflowByName(workflowName, account_id)
+    if(workflow.canTriggerWorkflow(triggerType)){
         executionData = ExecData({name: 'start', data: workflowInput})
         canTrigger = true
     }

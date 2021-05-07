@@ -2,6 +2,7 @@ const Koa = require('koa')
 const KoaRouter = require('@koa/router')
 const bodyParser = require('koa-bodyparser')
 const logger = require('koa-logger');
+const jwt = require('koa-jwt');
 const config = require('../config/config')
 
 require('dotenv').config()
@@ -31,6 +32,8 @@ if(config.serveStatic){
 app.use(logger())
 app.use(bodyParser())
 
+app.use(jwt({ secret: config.secretKeyBase }).unless({ path: [/^.*auth.*$/] }));
+// Middleware below this line is only reached if JWT token is valid
 
 // Register our REST API.
 registerApi(router)

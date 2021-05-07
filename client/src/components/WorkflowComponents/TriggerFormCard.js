@@ -1,4 +1,4 @@
-import React, {useEffect, useState} from 'react';
+import React, {useContext, useEffect, useState} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -12,6 +12,7 @@ import ErrorOutlineIcon from '@material-ui/icons/ErrorOutline';
 import DoneIcon from '@material-ui/icons/Done';
 
 import * as yup from 'yup';
+import {UserContext} from "../../UserContext";
 
 const validationSchema = yup.object({
     triggerType: yup.string().required()
@@ -48,6 +49,7 @@ const TriggerFormCard = ({attrs, triggerTypes,onUpdate}) => {
     const [triggerType, setTriggerType] = useState(null)
     const [reqParams, setReqParams] = useState([])
     const [isSaved, setIsSaved] = useState(false)
+    const { user } = useContext(UserContext);
     //const reqParams = {email: ['to', 'subject', 'text'], http: ['url','method','params','body']}
     //
     const handleClick = () => {
@@ -62,28 +64,35 @@ const TriggerFormCard = ({attrs, triggerTypes,onUpdate}) => {
     useEffect(() => {
         //get required parameters for the current action type
         if(triggerType) {
-            console.log("making fetch request for getting required params")
-            fetch(`/api/v1/triggers/params/${triggerType}`).then(response => {
-                if (response.ok) {
-                    return response.json();
-                }
-                throw new Error("Network response was not ok.");
-            })
-                .then(function (jsonResponse) {
-                    console.log("Successful req_params response:");
-                    console.log(jsonResponse);
-                    if (jsonResponse.data) {
-                        setReqParams(jsonResponse.data);
-                    } else {
-                        console.error("No required params returned");
+            if (user) {
+                const bearer = "Bearer " + user.token;
+                const headers = {
+                    Authorization: bearer,
+                    "Content-Type": "application/json",
+                };
+                console.log("making fetch request for getting required params")
+                fetch(`/api/v1/triggers/params/${triggerType}`, {headers: headers}).then(response => {
+                    if (response.ok) {
+                        return response.json();
                     }
+                    throw new Error("Network response was not ok.");
                 })
-                .catch(function (error) {
-                    console.log(
-                        "There has been a problem with your fetch operation: ",
-                        error.message
-                    );
-                });
+                    .then(function (jsonResponse) {
+                        console.log("Successful req_params response:");
+                        console.log(jsonResponse);
+                        if (jsonResponse.data) {
+                            setReqParams(jsonResponse.data);
+                        } else {
+                            console.error("No required params returned");
+                        }
+                    })
+                    .catch(function (error) {
+                        console.log(
+                            "There has been a problem with your fetch operation: ",
+                            error.message
+                        );
+                    });
+            }
         }
     }, [triggerType])
 

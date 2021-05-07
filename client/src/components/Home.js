@@ -1,11 +1,11 @@
-import React from 'react';
+import React, {useContext} from 'react';
 import { useParams, Link, Route } from "react-router-dom";
 import { makeStyles } from "@material-ui/core/styles";
-import HomeIcon from "@material-ui/icons/Home";
 import TimelineIcon from '@material-ui/icons/Timeline';
 import Workflows from './Workflows'
 import NewWorkflow from "./NewWorkflow";
 import WorkflowDetails from "./WorkflowComponents/WorkflowDetails";
+import { UserContext } from "../UserContext";
 
 import {
     Drawer,
@@ -26,10 +26,12 @@ const useStyles = makeStyles((theme) => ({
 const Home = () => {
     const classes = useStyles();
     const { account_id } = useParams();
+    const { user } = useContext(UserContext);
     console.log(`account id from useParams: ${account_id}`);
 
     return (
         <div>
+            {user ? (
             <Grid container justify="center" alignItems="center" direction="column">
                 <Grid item>
                     <Drawer
@@ -41,14 +43,7 @@ const Home = () => {
                         aria-label="mailbox folders"
                     >
                         <List>
-                            <Link to={`#`} className={classes.link}>
-                                <ListItem button>
-                                    <ListItemIcon>
-                                        <HomeIcon />
-                                    </ListItemIcon>
-                                    <ListItemText primary={"Dashboard"} />
-                                </ListItem>
-                            </Link>
+
                             <Link
                                 to={`/accounts/${account_id}/workflows`}
                                 className={classes.link}
@@ -65,13 +60,10 @@ const Home = () => {
                     </Drawer>
                 </Grid>
                 <Grid item>
-                    <Typography variant="h4" gutterBottom>
-                        Dashboard
-                    </Typography>
-                    <br />
+
                     <Route exact path="/accounts/:account_id/workflows">
                         <Container>
-                            <Typography variant="h5" gutterBottom>
+                            <Typography variant="h3" gutterBottom>
                                 Workflows
                             </Typography>
                             <Workflows/>
@@ -95,7 +87,9 @@ const Home = () => {
                     </Route>
                 </Grid>
             </Grid>
-
+            ) : (
+                <Link to="/login" >You need to login</Link>
+            )}
 
         </div>
     );

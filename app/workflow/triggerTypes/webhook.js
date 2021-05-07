@@ -8,8 +8,8 @@ const webhookListener = async (ctx) => {
     const workflowName = ctx.params.workflow_name
     console.log(`attempting to trigger workflow ${workflowName}`)
     const data = ctx.request.body
-    const {access_token} = ctx.request.headers
-    const workflowExecObj = await workflowExecution(workflowName, 'webhook', access_token, data)
+    const {account_id} = ctx.state.user
+    const workflowExecObj = await workflowExecution(workflowName, 'webhook', data,account_id)
     const result = await workflowExecObj.runExecutionLoop()
     console.log("workflow result:")
     console.log(result)

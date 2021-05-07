@@ -1,4 +1,4 @@
-import React, {useEffect} from 'react';
+import React, {useContext, useEffect} from 'react';
 import { makeStyles } from '@material-ui/core/styles';
 import Card from '@material-ui/core/Card';
 import CardActions from '@material-ui/core/CardActions';
@@ -7,6 +7,7 @@ import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Switch from '@material-ui/core/Switch';
 import {Link, useParams} from "react-router-dom";
+import {UserContext} from "../../UserContext";
 
 
 const useStyles = makeStyles({
@@ -27,6 +28,7 @@ const WorkflowCard = ({id, name, isActive, workflow}) => {
     const classes = useStyles();
     const { account_id } = useParams();
     const [active, setActive] = React.useState(isActive);
+    const { user } = useContext(UserContext);
 
     const handleChange = (event) => {
         console.log(`setting is_active to ${event.target.checked} for id ${id}`)
@@ -34,21 +36,26 @@ const WorkflowCard = ({id, name, isActive, workflow}) => {
     };
 
     useEffect(() => {
-        console.log(`sending PUT request for id ${id}`)
-        fetch(`/api/v1/accounts/${account_id}/workflows/${id}`,
-            {
-                method: 'PUT',
-                body: JSON.stringify({is_active: active}),
-                headers: {
-                    'Content-Type': 'application/json'
+        if (user) {
+            const bearer = "Bearer " + user.token;
+            const headers = {
+                Authorization: bearer,
+                "Content-Type": "application/json",
+            };
+            console.log(`sending PUT request for id ${id}`)
+            fetch(`/api/v1/accounts/${account_id}/workflows/${id}`,
+                {
+                    method: 'PUT',
+                    body: JSON.stringify({is_active: active}),
+                    headers: headers
+                }).then(response => {
+                if (response.ok) {
+                    console.log("workflow submitted successfully")
+                } else {
+                    console.error(`ERROR while posting workflow: ${response.status}`)
                 }
-            }).then(response => {
-            if(response.ok){
-                console.log("workflow submitted successfully")
-            } else{
-                console.error(`ERROR while posting workflow: ${response.status}`)
-            }
-        })
+            })
+        }
     },[active])
 
     return (
