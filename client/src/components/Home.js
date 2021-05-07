@@ -25,6 +25,9 @@ const useStyles = makeStyles((theme) => ({
 
 const Home = () => {
     const classes = useStyles();
+    const { account_id } = useParams();
+    console.log(`account id from useParams: ${account_id}`);
+
     return (
         <div>
             <Grid container justify="center" alignItems="center" direction="column">
@@ -47,7 +50,7 @@ const Home = () => {
                                 </ListItem>
                             </Link>
                             <Link
-                                to={`/workflows`}
+                                to={`/accounts/${account_id}/workflows`}
                                 className={classes.link}
                             >
                                 <ListItem button>
@@ -63,10 +66,10 @@ const Home = () => {
                 </Grid>
                 <Grid item>
                     <Typography variant="h4" gutterBottom>
-                        Sandpiper
+                        Dashboard
                     </Typography>
                     <br />
-                    <Route exact path="/workflows">
+                    <Route exact path="/accounts/:account_id/workflows">
                         <Container>
                             <Typography variant="h5" gutterBottom>
                                 Workflows
@@ -74,7 +77,7 @@ const Home = () => {
                             <Workflows/>
                         </Container>
                     </Route>
-                    <Route exact path="/workflow/new">
+                    <Route exact path="/accounts/:account_id/workflow/new">
                         <Container>
                             <Typography variant="h5" gutterBottom>
                                 New Workflow
@@ -82,7 +85,7 @@ const Home = () => {
                             <NewWorkflow/>
                         </Container>
                     </Route>
-                    <Route exact path="/workflows/:workflow_id">
+                    <Route exact path="/accounts/:account_id/workflows/:workflow_id">
                         <Container>
                             <Typography variant="h5" gutterBottom>
                                 Workflow detail

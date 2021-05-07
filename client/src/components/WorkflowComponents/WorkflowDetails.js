@@ -34,6 +34,7 @@ const WorkflowDetails = ({name, config}) => {
     const [workflow, setWorkflow] = useState(null)
     const [activeStep, setActiveStep] = useState(0);
     const classes = useStyles();
+    const { account_id } = useParams();
     const handleNext = () => {
         setActiveStep((prevActiveStep) => prevActiveStep + 1);
     };
@@ -43,7 +44,7 @@ const WorkflowDetails = ({name, config}) => {
     };
 
     useEffect(() => {
-        fetch(`/api/v1/accounts/1/workflows/${workflow_id}`)
+        fetch(`/api/v1/accounts/${account_id}/workflows/${workflow_id}`)
             .then(response => {
                 if (response.ok) {
                     return response.json();
@@ -65,7 +66,7 @@ const WorkflowDetails = ({name, config}) => {
                     error.message
                 );
             });
-    })
+    },[])
 
     let workflowActions = []
     if(workflow){

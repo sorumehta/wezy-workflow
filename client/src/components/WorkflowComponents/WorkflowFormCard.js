@@ -50,6 +50,7 @@ const WorkflowFormCard = ({attrs, actionTypes, prevActions, onUpdate}) => {
     const [isSaved, setIsSaved] = useState(false)
     //const reqParams = {email: ['to', 'subject', 'text'], http: ['url','method','params','body']}
     //
+    console.log(`actionTypes : ${actionTypes}`)
 
     const handleActionChange = (actionTypeValue) => {
         console.log(`actionType value changed to ${actionTypeValue}`)

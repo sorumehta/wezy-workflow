@@ -3,7 +3,6 @@ const axios = require('axios').default;
 
 const Http = (options) => {
 
-
     const execute = async () => {
         const {url, method, data, params, headers} = options
         console.log(`requesting url ${url} with method ${method} and data:`)

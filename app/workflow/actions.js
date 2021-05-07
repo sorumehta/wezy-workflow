@@ -6,8 +6,8 @@ const Email = require('./actionTypes/email')
 //const Auth = require('./auth')
 
 
-const allActions = async (ctx) => {
-    return ['email,http']
+const allActions = (ctx) => {
+    return ['email','http']
 }
 
 const getActionByType = (type) => {

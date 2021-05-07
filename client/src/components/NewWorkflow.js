@@ -9,6 +9,7 @@ import StepContent from '@material-ui/core/StepContent';
 import Button from '@material-ui/core/Button';
 import { makeStyles } from '@material-ui/core/styles';
 import Divider from '@material-ui/core/Divider';
+import {useParams} from "react-router-dom";
 
 
 const useStyles = makeStyles((theme) => ({
@@ -37,7 +38,7 @@ const NewWorkflow = () => {
     const [prevActionList, setPrevActionList] = useState(['manual','start']);
     const [actionTypes, setActionTypes] = useState([])
     const [triggerTypes, setTriggerTypes] = useState([])
-
+    const { account_id } = useParams();
 
     const classes = useStyles();
 
@@ -180,7 +181,7 @@ const NewWorkflow = () => {
         workflow.links = links
         console.log("submitting workflow:")
         console.log(workflow)
-        fetch('/api/v1/accounts/1/workflows',
+        fetch(`/api/v1/accounts/${account_id}/workflows`,
             {
                 method: 'POST',
                 body: JSON.stringify({workflow, name}),

@@ -4,7 +4,7 @@ import GridList from '@material-ui/core/GridList';
 import GridListTile from '@material-ui/core/GridListTile';
 import WorkflowCard from "./WorkflowComponents/WorkflowCard";
 import {Button} from "@material-ui/core";
-import {Link} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 
 const useStyles = makeStyles((theme) => ({
     root: {
@@ -23,9 +23,10 @@ const useStyles = makeStyles((theme) => ({
 
 const Workflows = () => {
     const classes = useStyles();
+    const { account_id } = useParams();
     const [workflowList, setWorkflowList] = useState([])
     useEffect(() => {
-        fetch('/api/v1/accounts/1/workflows')
+        fetch(`/api/v1/accounts/${account_id}/workflows`)
             .then(response => {
                 if (response.ok) {
                     return response.json();
@@ -51,7 +52,7 @@ const Workflows = () => {
     },[])
     return (
         <React.Fragment>
-            <Link to={`/workflow/new`} className={classes.link}>
+            <Link to={`workflow/new`} className={classes.link}>
             <Button variant="contained" color="primary" id={"newworkflow"}>
                 New Workflow
             </Button>

@@ -6,7 +6,7 @@ import CardContent from '@material-ui/core/CardContent';
 import Typography from '@material-ui/core/Typography';
 import Button from '@material-ui/core/Button';
 import Switch from '@material-ui/core/Switch';
-import {Link} from "react-router-dom";
+import {Link, useParams} from "react-router-dom";
 
 
 const useStyles = makeStyles({
@@ -25,6 +25,7 @@ const useStyles = makeStyles({
 
 const WorkflowCard = ({id, name, isActive, workflow}) => {
     const classes = useStyles();
+    const { account_id } = useParams();
     const [active, setActive] = React.useState(isActive);
 
     const handleChange = (event) => {
@@ -34,7 +35,7 @@ const WorkflowCard = ({id, name, isActive, workflow}) => {
 
     useEffect(() => {
         console.log(`sending PUT request for id ${id}`)
-        fetch(`/api/v1/accounts/1/workflows/${id}`,
+        fetch(`/api/v1/accounts/${account_id}/workflows/${id}`,
             {
                 method: 'PUT',
                 body: JSON.stringify({is_active: active}),
@@ -62,7 +63,7 @@ const WorkflowCard = ({id, name, isActive, workflow}) => {
 
             </CardContent>
             <CardActions>
-                <Link to={`/workflows/${id}`} className={classes.link}>
+                <Link to={`workflows/${id}`} className={classes.link}>
                     <Button size="small">Details</Button>
                 </Link>
             </CardActions>

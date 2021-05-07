@@ -4,11 +4,14 @@ const workflows = require('../controllers/accounts/workflows_controller')
 const {getActionParams, getAllActions} = require('../controllers/accounts/workflow_actions_controller')
 const { getTriggerParams, getAllTriggers} = require('../controllers/accounts/workflow_triggers_controller')
 const {webhookListener} = require('../workflow/triggerTypes/webhook')
-
+const {postLogin} = require('../controllers/auth_controller')
 
 module.exports = (router) => {
     // register
     router.post('/auth/register', accounts.create)
+
+    //login
+    router.post('/auth/login', postLogin)
 
     // accounts
     router.get('/accounts', accounts.index)
