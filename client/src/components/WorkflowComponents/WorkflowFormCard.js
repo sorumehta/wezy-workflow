@@ -151,7 +151,6 @@ const WorkflowFormCard = ({attrs, actionTypes, prevActions, onUpdate}) => {
                             <div>
                                 <Button variant="outlined" color="secondary" type={'submit'} disabled={isSubmitting}>Save</Button>
                             </div>
-                            <pre>{JSON.stringify(values, null, 2)}</pre>
                         </Form>
                     )}
                 </Formik>
