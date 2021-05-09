@@ -44,7 +44,7 @@ const useStyles = makeStyles((theme) =>({
     }
 }));
 
-const WorkflowFormCard = ({attrs, actionTypes, prevActions, onUpdate}) => {
+const WorkflowFormCard = ({attrs, actionTypes, prevActions, onUpdate, pathName}) => {
     const classes = useStyles();
     const [actionType, setActionType] = useState(null)
     const [reqParams, setReqParams] = useState([])
@@ -109,6 +109,9 @@ const WorkflowFormCard = ({attrs, actionTypes, prevActions, onUpdate}) => {
                 }
             />
             <CardContent>
+                <Typography>
+                    {pathName}
+                </Typography>
                 <Formik
                     enableReinitialize={true}
                     initialValues={{

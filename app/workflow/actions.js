@@ -7,7 +7,7 @@ const Email = require('./actionTypes/email')
 
 
 const allActions = (ctx) => {
-    return ['email','http']
+    return ['email','http','condition']
 }
 
 const getActionByType = (type) => {
